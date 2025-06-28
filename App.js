@@ -12,7 +12,7 @@ export default function App() {
   let width = Dimensions.get('window').width
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Chat">
+      <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Chat" component={Chat}/>
         <Stack.Screen name="Login" component={Login}/>
         
