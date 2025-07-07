@@ -1,25 +1,27 @@
 import { useEffect, useState,useRef } from 'react';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
-import { Dimensions, FlatList,StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { faArrowAltCircleRight } from '@fortawesome/free-solid-svg-icons';
+import { Dimensions, FlatList,StatusBar,StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { io } from 'socket.io-client';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import AntDesign from '@expo/vector-icons/AntDesign'
 
 export default function Chat() {
  
   const route = useRoute();
   const navigation = useNavigation();
-  const{salaEntrada,usuarioNick} = route.params;
+  const salaEntrada = route?.params?.salaEntrada || 'geral';
+  const usuarioNick = route?.params?.usuarioNick || 'Anônimo';
+
 
   const[usuarioAtual,setUsuarioAtual] = useState(usuarioNick);
   const[sala,setSala]=useState(salaEntrada);
   const[conversas,setConversas] =useState([]);
-  const[mensagemInput,setMensagemInput] = useState();
+  const[mensagemInput,setMensagemInput] = useState('');
   const[socketIo,setSocketIo] = useState(null);
   const flatlistref= useRef(null);
+  const[controlador,setControlador] =useState(false);
   useEffect(()=>{
     try{
-      const socket = io('http://192.168.0.104:3000');
+      const socket = io('https://servidorchat-t33w.onrender.com');
       
       setSocketIo(socket);
       
@@ -43,9 +45,18 @@ export default function Chat() {
         }
       })
       
+      socket.on('disconnect',()=>{
+        setSocketIo(null);
+        console.log('Cliente foi deslogado por Inatividade');
+        navigation.reset({
+          index:0,
+          routes:[{name:'Login'}]
+        })
+      })
 
       return ()=>{
         socket.disconnect();
+        
       }
     }catch(error){
       console.log('ERROR:'+error)
@@ -54,32 +65,50 @@ export default function Chat() {
   },[])  
     
   function enviar(){
-   
-    if(mensagemInput != null && mensagemInput != ''){
-      try{
-      socketIo.emit('mensagem',{sala,mensagemInput,usuarioAtual})
-      }catch(error){
-        console.error(error)
+   if(socketIo != null){
+      if(mensagemInput != null && mensagemInput != ''){
+        try{
+        socketIo.emit('mensagem',{sala,mensagemInput,usuarioAtual})
+        }catch(error){
+          console.error(error)
+        }
       }
+      setMensagemInput('')
+    }else{
+      
+      setControlador(true);
     }
-    setMensagemInput('')
   }
 
+  function retornar(){
+    console.log('funcionou');
+    
+    socketIo.disconnect();
+    navigation.reset({
+      index:0,
+      routes:[{name:'Login'}]
+    })
+  }
   let width = Dimensions.get('window').width
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor='#594f4f' barStyle={'dark-content'}/>
+      <TouchableOpacity style={styles.btnBack} onPress={retornar}>
+          <AntDesign name="arrowleft" size={24} color="black" />
+      </TouchableOpacity>
       <FlatList style={styles.scrollContainer}
           data={conversas}
           ref={flatlistref}
           scrollEnabled={true}
-          scrollToOverflowEnabled={true}
-          StickyHeaderComponent={styles.scrollContainer}
           keyExtractor={(item) =>item.id}
           renderItem={({item})=>{
-            const result = usuarioAtual === item.usuario;
+            if (!item || !item.usuario || !item.mensagem) return null;
             return(
-              <Text style={[result? styles.msgPrincipal: styles.msgOutros,{width:width/1.4}]}>
-                {item.mensagem}</Text>
+              <View style={[item.usuario === usuarioAtual ? styles.msgPrincipal : styles.msgOutros,{width:width/1.4}]}>
+                <Text style={styles.textNickname}>{item.usuario}</Text>
+                <Text >
+                  {item.mensagem}</Text>
+              </View>
             )}}
           onContentSizeChange={()=>{
             //serve para fazer a lista descer toda vez que vai chegando mensagem
@@ -96,7 +125,7 @@ export default function Chat() {
           />
         <TouchableOpacity style={{alignContent:'center',alignSelf:'center'}}
           onPress={enviar}>
-          <FontAwesomeIcon icon={faArrowAltCircleRight} size={32} />
+          <AntDesign name="rightcircle" size={32} color="black" />
         </TouchableOpacity>
       </View>
     </View>
@@ -112,22 +141,31 @@ const styles = StyleSheet.create({
   scrollContainer:{
     flex:1,
     width:'100%',
-    backgroundColor:'blue'
+    backgroundColor:'#9de0ad'
   },
   msgOutros:{
     textAlign:'left',
-    backgroundColor:'red',
+    backgroundColor:'#45ada8',
     padding:5,
     marginTop:5
   },
   msgPrincipal:{
     textAlign:'left',
-    backgroundColor:'green',
+    backgroundColor:'#e5fcc2',
     marginTop:5,
     padding:5,
     marginLeft:"27%"
   },
   areaInput:{
-    flexDirection:'row'
+    flexDirection:'row',
+    height:"9%"
+  },
+  textNickname:{
+    textTransform:'capitalize',
+    
+  },
+  btnBack:{
+    position:'absolute',
+    zIndex:1
   }
 });
