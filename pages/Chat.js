@@ -1,9 +1,12 @@
 import { useEffect, useState,useRef } from 'react';
-import { Dimensions, FlatList,StatusBar,StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Dimensions, FlatList,PixelRatio,StatusBar,StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { io } from 'socket.io-client';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AntDesign from '@expo/vector-icons/AntDesign'
 
+
+
+const tamanhoFont = PixelRatio.getFontScale();
 export default function Chat() {
  
   const route = useRoute();
@@ -47,7 +50,7 @@ export default function Chat() {
       
       socket.on('disconnect',()=>{
         setSocketIo(null);
-        console.log('Cliente foi deslogado por Inatividade');
+        console.log('Cliente foi deslogado');
         navigation.reset({
           index:0,
           routes:[{name:'Login'}]
@@ -92,10 +95,13 @@ export default function Chat() {
   let width = Dimensions.get('window').width
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor='#594f4f' barStyle={'dark-content'}/>
-      <TouchableOpacity style={styles.btnBack} onPress={retornar}>
-          <AntDesign name="arrowleft" size={24} color="black" />
-      </TouchableOpacity>
+      <StatusBar />
+      <View  style={styles.areaHeader}>
+        <TouchableOpacity style={styles.headerItems} onPress={retornar}>
+            <AntDesign name="arrowleft" size={32*tamanhoFont} color="black" />
+        </TouchableOpacity> 
+        <Text style={[styles.headerItems,{fontSize:36*tamanhoFont,textTransform:'capitalize' }]}>{salaEntrada}</Text>
+      </View>
       <FlatList style={styles.scrollContainer}
           data={conversas}
           ref={flatlistref}
@@ -117,8 +123,8 @@ export default function Chat() {
           }}
             />
 
-      <View style={[styles.areaInput,{maxHeight:'20%'}]}>
-        <TextInput placeholder='Digite sua mensagem' style={{width:width/1.11}}
+      <View style={[styles.areaInput,{maxHeight:'25%'}]}>
+        <TextInput placeholder='Digite sua mensagem' style={[styles.input,{width:width/1.11,fontSize:24*tamanhoFont}]}
           multiline={true}
           value={mensagemInput}
           onChangeText={(text) => setMensagemInput(text)}
@@ -158,14 +164,26 @@ const styles = StyleSheet.create({
   },
   areaInput:{
     flexDirection:'row',
-    height:"9%"
+    fontSize:24 * tamanhoFont,
+    backgroundColor:'#9de0ad'
   },
   textNickname:{
     textTransform:'capitalize',
+    fontSize:24 *tamanhoFont
     
   },
-  btnBack:{
-    position:'absolute',
-    zIndex:1
+  headerItems:{
+    margin:5,
+    padding:5
+  },
+  input:{
+    backgroundColor:'#fff',
+    borderRadius:5,
+    margin:5
+  },
+  areaHeader:{
+    flexDirection:'row',
+    alignItems:'center',
+    backgroundColor:'#9de0ad'
   }
 });

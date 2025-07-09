@@ -1,10 +1,14 @@
 import { useState } from 'react';
-import { Button, StyleSheet, StatusBar, TextInput, View } from 'react-native';
+import { Text, StyleSheet, StatusBar, TextInput, View, PixelRatio, TouchableOpacity } from 'react-native';
+
+
+
+const fontScale = PixelRatio.getFontScale();
 
 export default function Login({ navigation }) {
   const [nickname, setNickname] = useState('');
   const [sala, setSala] = useState('');
-
+  
   function proximaTela() {
     if (nickname.trim() && sala.trim()) {
       navigation.navigate('Chat', {
@@ -29,7 +33,9 @@ export default function Login({ navigation }) {
         onChangeText={setSala}
         value={sala}
       />
-      <Button title="Entrar na Sala" onPress={proximaTela} />
+      <TouchableOpacity onPress={proximaTela} >
+        <Text style={styles.btnProximo}>Começar a conversa</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -37,7 +43,7 @@ export default function Login({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#9de0ad',
     alignContent: 'center',
     alignItems: 'center',
     justifyContent: 'center',
@@ -47,5 +53,14 @@ const styles = StyleSheet.create({
     width: '80%',
     padding: 5,
     margin: 5,
+    fontSize: 24 * fontScale
   },
+  btnProximo:{
+    fontSize:24*fontScale,
+    margin:5,
+    padding:10,
+    backgroundColor:'#45ada8',
+    borderRadius:5,
+
+  }
 });
