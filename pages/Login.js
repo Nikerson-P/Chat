@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text, StyleSheet, StatusBar, TextInput, View, PixelRatio, TouchableOpacity } from 'react-native';
+import { Text,Image, StyleSheet, StatusBar, TextInput, View, PixelRatio, TouchableOpacity } from 'react-native';
 
 
 
@@ -21,6 +21,11 @@ export default function Login({ navigation }) {
   return (
     <View style={styles.container}>
       <StatusBar />
+      <Image 
+        source={require('../assets/icon.png')}
+        style={styles.img}
+        resizeMode="contain"
+        />
       <TextInput
         style={styles.input}
         placeholder="Digite seu Nik"
@@ -50,7 +55,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderBottomWidth:1,
-    width: '80%',
+    width: '70%',
     padding: 5,
     margin: 5,
     fontSize: 24 * fontScale
@@ -62,5 +67,9 @@ const styles = StyleSheet.create({
     backgroundColor:'#45ada8',
     borderRadius:5,
 
+  },
+  img:{
+    width:'40%',
+    height:'40%'
   }
 });

@@ -112,7 +112,7 @@ export default function Chat() {
             return(
               <View style={[item.usuario === usuarioAtual ? styles.msgPrincipal : styles.msgOutros,{width:width/1.4}]}>
                 <Text style={styles.textNickname}>{item.usuario}</Text>
-                <Text >
+                <Text style={styles.txtMenesagem}>
                   {item.mensagem}</Text>
               </View>
             )}}
@@ -123,15 +123,15 @@ export default function Chat() {
           }}
             />
 
-      <View style={[styles.areaInput,{maxHeight:'25%'}]}>
-        <TextInput placeholder='Digite sua mensagem' style={[styles.input,{width:width/1.11,fontSize:24*tamanhoFont}]}
+      <View style={[styles.areaInput,{maxHeight:'28%',width:'100%'}]}>
+        <TextInput placeholder='Digite sua mensagem' style={[styles.input,{width:'89%',fontSize:24*tamanhoFont}]}
           multiline={true}
           value={mensagemInput}
           onChangeText={(text) => setMensagemInput(text)}
           />
-        <TouchableOpacity style={{alignContent:'center',alignSelf:'center'}}
+        <TouchableOpacity style={{alignContent:'center',alignSelf:'center',marginLeft:'auto'}}
           onPress={enviar}>
-          <AntDesign name="rightcircle" size={32} color="black" />
+          <AntDesign name="rightcircle" size={32*tamanhoFont} color="black" />
         </TouchableOpacity>
       </View>
     </View>
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   },
   textNickname:{
     textTransform:'capitalize',
-    fontSize:24 *tamanhoFont
+    fontSize:12 *tamanhoFont
     
   },
   headerItems:{
@@ -185,5 +185,8 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     alignItems:'center',
     backgroundColor:'#9de0ad'
+  },
+  txtMenesagem:{
+    fontSize:18*tamanhoFont
   }
 });
